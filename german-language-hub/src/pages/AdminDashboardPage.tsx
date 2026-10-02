@@ -11,7 +11,7 @@ interface AdminDashboardPageProps {
   onNavigateHome: () => void;
 }
 
-const DEFAULT_ADMIN_PASSWORD = 'admin0062';
+const DEFAULT_ADMIN_PASSWORD = 'pak09012@';
 const MAX_CAPACITY = 2000;
 
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNavigateHome }) => {
