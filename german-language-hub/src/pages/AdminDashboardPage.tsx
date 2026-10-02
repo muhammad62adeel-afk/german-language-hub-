@@ -333,11 +333,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-stone-800/80 text-center text-[11px] text-stone-500">
-            <span>Hint: Default passcode is </span>
-            <code className="text-amber-400 font-mono font-bold bg-stone-900 px-1.5 py-0.5 rounded">admin0062</code>
-          </div>
-        </div>
+         
       </div>
     );
   }
