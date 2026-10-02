@@ -47,7 +47,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      // 1. Try server API
       const res = await fetch('/api/registrations');
       if (res.ok) {
         const data = await res.json();
@@ -62,7 +61,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       // Network or offline fallback
     }
 
-    // 2. Fallback to localStorage
     try {
       const local = localStorage.getItem('german_registrations');
       if (local) {
@@ -87,7 +85,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     setIsVerifying(true);
 
     try {
-      // Try server verify endpoint first
       const res = await fetch('/api/admin/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,10 +98,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         return;
       }
     } catch {
-      // If server unreachable, check client-side default password
+      // Server error fallback
     }
 
-    // Fallback comparison with default password
     if (passwordInput.trim() === DEFAULT_ADMIN_PASSWORD) {
       sessionStorage.setItem('german_admin_auth', 'true');
       setIsAuthenticated(true);
@@ -129,14 +125,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
     const targetId = deleteCandidate.id;
 
-    // 1. Try deleting from server
     try {
       await fetch(`/api/registrations/${targetId}`, { method: 'DELETE' });
     } catch {
       // ignore
     }
 
-    // 2. Update local state & localStorage
     const updated = registrations.filter((r) => r.id !== targetId);
     setRegistrations(updated);
     try {
@@ -240,7 +234,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const capacityPercent = Math.min(100, (totalCount / MAX_CAPACITY) * 100);
 
   // -------------------------------------------------------------
-  // Render: Login Screen (if not authenticated)
+  // Render: Login Screen (Cleaned - No Password Hint Shown)
   // -------------------------------------------------------------
   if (!isAuthenticated) {
     return (
@@ -258,7 +252,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           <span>Back to Main Website</span>
         </button>
 
-        <div className="w-full max-w-md bg-stone-950/90 border border-stone-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-full max-w-md bg-stone-950/90 border border-stone-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10">
           {/* Header & German Crest */}
           <div className="text-center mb-6">
             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl overflow-hidden border-2 border-stone-700 shadow-lg flex flex-col ring-2 ring-amber-500/20">
@@ -308,7 +302,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </div>
 
             {authError && (
-              <div className="p-3 rounded-xl bg-red-950/50 border border-red-800 text-red-300 text-xs flex items-center gap-2 animate-in fade-in">
+              <div className="p-3 rounded-xl bg-red-950/50 border border-red-800 text-red-300 text-xs flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
                 <span>{authError}</span>
               </div>
@@ -345,7 +339,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-stone-950 border border-emerald-500 text-emerald-400 text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2.5 animate-in slide-in-from-bottom-4">
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-stone-950 border border-emerald-500 text-emerald-400 text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2.5">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -355,7 +349,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       <header className="sticky top-0 z-30 bg-stone-950/95 backdrop-blur-md border-b border-stone-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
           
-          {/* Left: Brand & Title */}
           <div className="flex items-center gap-3">
             <button
               onClick={onNavigateHome}
@@ -387,13 +380,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </div>
           </div>
 
-          {/* Right: Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={fetchRegistrations}
               disabled={isLoading}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-800 text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
-              title="Refresh student list"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-amber-400' : ''}`} />
               <span className="hidden md:inline">Refresh</span>
@@ -402,7 +393,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             <button
               onClick={handleExportCSV}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-              title="Export all rows to CSV/Excel"
             >
               <FileSpreadsheet className="w-4 h-4" />
               <span className="hidden sm:inline">Export Excel / CSV</span>
@@ -411,7 +401,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             <button
               onClick={handleLogout}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-900 hover:bg-red-950/60 text-stone-400 hover:text-red-400 border border-stone-800 hover:border-red-800/80 text-xs font-bold transition-all cursor-pointer"
-              title="Sign out of admin"
             >
               <Lock className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Logout</span>
@@ -444,7 +433,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               </p>
             </div>
 
-            {/* Quota Progress Meter */}
             <div className="w-full md:w-72 bg-stone-950/80 p-3.5 rounded-2xl border border-stone-800 shrink-0">
               <div className="flex items-center justify-between text-xs font-bold mb-1.5">
                 <span className="text-stone-300">Admission Seats</span>
@@ -463,7 +451,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </div>
           </div>
 
-          {/* Quick Metrics Badges */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 mt-5 pt-4 border-t border-stone-800/80">
             <div className="p-3 rounded-xl bg-stone-900/90 border border-stone-800">
               <div className="text-[10px] font-bold text-stone-400 uppercase">Level A1</div>
@@ -509,10 +496,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
         </div>
 
-        {/* Search, Filter & Quick Controls Bar */}
+        {/* Search & Filters */}
         <div className="p-4 sm:p-5 rounded-2xl bg-stone-950 border border-stone-800 shadow-md flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4">
-          
-          {/* Search by Name / WhatsApp / City */}
           <div className="relative flex-1">
             <input
               type="text"
@@ -532,7 +517,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             )}
           </div>
 
-          {/* Filter by Level */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-xs font-bold text-stone-400 uppercase mr-1">Level:</span>
             {['ALL', 'A1', 'A2', 'B1', 'B2'].map((lvl) => (
@@ -550,7 +534,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             ))}
           </div>
 
-          {/* Filter by Batch */}
           <div className="flex items-center gap-1.5">
             <span className="text-xs font-bold text-stone-400 uppercase mr-1">Batch:</span>
             <select
@@ -563,7 +546,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               <option value="Night">Night (09:00 PM)</option>
             </select>
           </div>
-
         </div>
 
         {/* Results Counter */}
@@ -586,7 +568,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           )}
         </div>
 
-        {/* Desktop & Tablet Table View */}
+        {/* Table View (Desktop) */}
         <div className="hidden lg:block bg-stone-950 border border-stone-800 rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
@@ -609,7 +591,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                       <div className="max-w-xs mx-auto text-center space-y-2">
                         <Users className="w-8 h-8 text-stone-600 mx-auto" />
                         <p className="font-bold text-stone-400 text-sm">No registrations found</p>
-                        <p className="text-xs text-stone-500">Try changing your search keywords or clearing filters.</p>
                       </div>
                     </td>
                   </tr>
@@ -629,20 +610,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                     });
 
                     return (
-                      <tr key={student.id} className="hover:bg-stone-900/60 transition-colors group">
-                        
-                        {/* 1. Full Name + ID + Age/Gender */}
+                      <tr key={student.id} className="hover:bg-stone-900/60 transition-colors">
                         <td className="py-4 px-4 align-top">
-                          <div className="font-extrabold text-white text-sm">
-                            {student.fullName}
-                          </div>
+                          <div className="font-extrabold text-white text-sm">{student.fullName}</div>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="font-mono text-[10px] text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20 font-bold">
                               {student.id}
                             </span>
-                            <span className="text-[11px] text-stone-400">
-                              {student.age} yrs • {student.gender}
-                            </span>
+                            <span className="text-[11px] text-stone-400">{student.age} yrs • {student.gender}</span>
                           </div>
                           {student.highestEducation && (
                             <div className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
@@ -652,14 +627,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           )}
                         </td>
 
-                        {/* 2. WhatsApp */}
                         <td className="py-4 px-4 align-top">
                           <a
                             href={waLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-bold bg-emerald-950/40 hover:bg-emerald-900/60 px-2.5 py-1.5 rounded-xl border border-emerald-800/60 transition-colors"
-                            title="Open WhatsApp Chat directly"
                           >
                             <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                             <span>{student.whatsappNumber}</span>
@@ -667,17 +640,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           </a>
                         </td>
 
-                        {/* 3. City & Country */}
                         <td className="py-4 px-4 align-top">
-                          <div className="font-bold text-stone-200">
-                            {student.city}
-                          </div>
-                          <div className="text-[11px] text-stone-400">
-                            {student.country}
-                          </div>
+                          <div className="font-bold text-stone-200">{student.city}</div>
+                          <div className="text-[11px] text-stone-400">{student.country}</div>
                         </td>
 
-                        {/* 4. German Level */}
                         <td className="py-4 px-4 align-top text-center">
                           <span
                             className={`inline-block px-2.5 py-1 rounded-lg font-black text-xs shadow-xs ${
@@ -694,7 +661,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           </span>
                         </td>
 
-                        {/* 5. Zoom Batch */}
                         <td className="py-4 px-4 align-top">
                           <div className="inline-flex items-center gap-1.5 font-bold text-xs">
                             {student.classTimeSlot?.includes('Morning') ? (
@@ -703,38 +669,28 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                               <Moon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                             )}
                             <span className="text-stone-200">
-                              {student.classTimeSlot?.includes('Morning')
-                                ? 'Morning (10 AM)'
-                                : 'Night (09 PM)'}
+                              {student.classTimeSlot?.includes('Morning') ? 'Morning (10 AM)' : 'Night (09 PM)'}
                             </span>
                           </div>
-                          <div className="text-[10px] text-stone-500 mt-0.5">Live on Zoom</div>
                         </td>
 
-                        {/* 6. Learning Purpose */}
                         <td className="py-4 px-4 align-top max-w-xs">
-                          <p className="text-stone-300 text-xs leading-snug line-clamp-2">
-                            {student.learningReason}
-                          </p>
+                          <p className="text-stone-300 text-xs leading-snug line-clamp-2">{student.learningReason}</p>
                         </td>
 
-                        {/* 7. Date / Time */}
                         <td className="py-4 px-4 align-top whitespace-nowrap text-stone-400">
                           <div className="font-medium text-stone-200">{formattedDate}</div>
                           <div className="text-[11px] text-stone-500">{formattedTime}</div>
                         </td>
 
-                        {/* 8. Action: Delete */}
                         <td className="py-4 px-4 align-top text-right">
                           <button
                             onClick={() => setDeleteCandidate(student)}
-                            className="p-2 rounded-xl bg-stone-900 hover:bg-red-950/80 text-stone-400 hover:text-red-400 border border-stone-800 hover:border-red-800 transition-colors cursor-pointer"
-                            title="Delete this registration"
+                            className="p-2 rounded-xl bg-stone-900 hover:bg-red-950/80 text-stone-400 hover:text-red-400 border border-stone-800 transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </td>
-
                       </tr>
                     );
                   })
@@ -744,13 +700,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
         </div>
 
-        {/* Mobile Friendly Card List */}
+        {/* Mobile View */}
         <div className="lg:hidden space-y-3">
           {filteredRegistrations.length === 0 ? (
             <div className="p-8 text-center bg-stone-950 rounded-2xl border border-stone-800 text-stone-500">
               <Users className="w-8 h-8 text-stone-600 mx-auto mb-2" />
               <p className="font-bold text-stone-400 text-sm">No registrations found</p>
-              <p className="text-xs text-stone-500">Try changing your search or filters.</p>
             </div>
           ) : (
             filteredRegistrations.map((student) => {
@@ -763,15 +718,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               });
 
               return (
-                <div
-                  key={student.id}
-                  className="p-4 rounded-2xl bg-stone-950 border border-stone-800 space-y-3 shadow-md"
-                >
+                <div key={student.id} className="p-4 rounded-2xl bg-stone-950 border border-stone-800 space-y-3 shadow-md">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-extrabold text-white text-base leading-tight">
-                        {student.fullName}
-                      </h3>
+                      <h3 className="font-extrabold text-white text-base leading-tight">{student.fullName}</h3>
                       <div className="flex items-center gap-2 mt-1 text-xs text-stone-400">
                         <span className="font-mono text-amber-400 font-bold bg-amber-400/10 px-1.5 py-0.5 rounded text-[11px]">
                           {student.id}
@@ -780,7 +730,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                       </div>
                     </div>
                     <span
-                      className={`px-2.5 py-1 rounded-lg font-black text-xs shadow-xs ${
+                      className={`px-2.5 py-1 rounded-lg font-black text-xs ${
                         student.targetLevel === 'A1'
                           ? 'bg-stone-800 text-white'
                           : student.targetLevel === 'A2'
@@ -814,31 +764,24 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
                   <div className="text-xs pt-1">
                     <span className="text-[10px] text-stone-500 uppercase block font-bold">Learning Purpose</span>
-                    <p className="text-stone-300 text-xs leading-relaxed mt-0.5">
-                      {student.learningReason}
-                    </p>
+                    <p className="text-stone-300 text-xs leading-relaxed mt-0.5">{student.learningReason}</p>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-stone-800/80">
-                    <span className="text-[11px] text-stone-500">
-                      {formattedDate}
-                    </span>
-
+                    <span className="text-[11px] text-stone-500">{formattedDate}</span>
                     <div className="flex items-center gap-2">
                       <a
                         href={waLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
                       >
                         <Phone className="w-3.5 h-3.5" />
                         <span>Chat WhatsApp</span>
                       </a>
-
                       <button
                         onClick={() => setDeleteCandidate(student)}
                         className="p-1.5 rounded-xl bg-stone-900 text-stone-400 hover:text-red-400 border border-stone-800"
-                        title="Delete registration"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -854,52 +797,37 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
       {/* Delete Confirmation Modal */}
       {deleteCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="w-full max-w-md bg-stone-950 border border-stone-800 rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-red-950/80 border border-red-800 text-red-400 flex items-center justify-center shrink-0">
                 <Trash2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-extrabold text-white text-base">
-                  Delete Registration?
-                </h3>
-                <p className="text-xs text-stone-400">
-                  This action cannot be undone.
-                </p>
+                <h3 className="font-extrabold text-white text-base">Delete Registration?</h3>
+                <p className="text-xs text-stone-400">This action cannot be undone.</p>
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-stone-900 border border-stone-800 text-xs space-y-1">
               <div className="text-stone-300 font-bold text-sm">{deleteCandidate.fullName}</div>
               <div className="text-stone-400">ID: {deleteCandidate.id} • Level: {deleteCandidate.targetLevel}</div>
-              <div className="text-emerald-400 font-mono">{deleteCandidate.whatsappNumber}</div>
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 onClick={() => setDeleteCandidate(null)}
                 disabled={isDeleting}
-                className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-300 text-xs font-bold cursor-pointer transition-colors"
+                className="px-4 py-2.5 rounded-xl bg-stone-900 text-stone-300 text-xs font-bold"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={isDeleting}
-                className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-extrabold shadow-md cursor-pointer transition-all flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-red-600 text-white text-xs font-extrabold"
               >
-                {isDeleting ? (
-                  <>
-                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Deleting...</span>
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-3.5 h-3.5" />
-                    <span>Confirm Delete</span>
-                  </>
-                )}
+                {isDeleting ? 'Deleting...' : 'Confirm Delete'}
               </button>
             </div>
           </div>
