@@ -11,7 +11,6 @@ interface AdminDashboardPageProps {
   onNavigateHome: () => void;
 }
 
-const DEFAULT_ADMIN_PASSWORD = 'pak09012@';
 const MAX_CAPACITY = 2000;
 
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNavigateHome }) => {
@@ -290,7 +289,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   type={showPassword ? 'text' : 'password'}
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="Enter passcode 
+                  
                   autoFocus
                   required
                   className="w-full pl-10 pr-10 py-3.5 rounded-xl bg-stone-900/90 border border-stone-700 text-white placeholder-stone-500 text-sm font-semibold focus:outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
@@ -333,10 +332,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </button>
           </form>
 
-         
-      </div>
-    );
-  }
+     
 
   // -------------------------------------------------------------
   // Render: Full Admin Dashboard
