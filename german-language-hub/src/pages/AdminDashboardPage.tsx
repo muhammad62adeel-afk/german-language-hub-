@@ -12,6 +12,7 @@ interface AdminDashboardPageProps {
 }
 
 const MAX_CAPACITY = 2000;
+const DEFAULT_ADMIN_PASSWORD = 'admin0062';
 
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNavigateHome }) => {
   // Auth state
@@ -289,7 +290,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   type={showPassword ? 'text' : 'password'}
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  
+                  placeholder="Enter admin passcode"
                   autoFocus
                   required
                   className="w-full pl-10 pr-10 py-3.5 rounded-xl bg-stone-900/90 border border-stone-700 text-white placeholder-stone-500 text-sm font-semibold focus:outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
@@ -331,8 +332,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               )}
             </button>
           </form>
-
-     
+        </div>
+      </div>
+    );
+  }
 
   // -------------------------------------------------------------
   // Render: Full Admin Dashboard
@@ -421,7 +424,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         
-        {/* Requirement 7: Total Count on Top Banner (Total Registrations: 1250 / 2000) */}
+        {/* Total Count Banner */}
         <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-stone-950 via-stone-900 to-stone-950 border border-stone-800 shadow-xl relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -583,11 +586,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           )}
         </div>
 
-        {/* ------------------------------------------------------------- */}
-        {/* Requirement 4: Table with all fields */}
-        {/* Full Name, WhatsApp, City, German Level, Zoom Batch, Learning Purpose, Date/Time */}
-        {/* ------------------------------------------------------------- */}
-        
         {/* Desktop & Tablet Table View */}
         <div className="hidden lg:block bg-stone-950 border border-stone-800 rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
@@ -746,7 +744,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
         </div>
 
-        {/* Mobile Friendly Card List (Small & Medium screens) */}
+        {/* Mobile Friendly Card List */}
         <div className="lg:hidden space-y-3">
           {filteredRegistrations.length === 0 ? (
             <div className="p-8 text-center bg-stone-950 rounded-2xl border border-stone-800 text-stone-500">
