@@ -1,0 +1,8 @@
+{
+  "name": "Remix FREE GERMAN A1 A2 B1 B2 LANGUAGE",
+  "description": "Learn German A1, A2, B1, and B2 with curriculum sponsored by Ahmed Rajput, Software Engineer in Germany. Registration, courses, and WhatsApp admission.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
