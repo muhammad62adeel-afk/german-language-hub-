@@ -12,7 +12,7 @@ interface AdminDashboardPageProps {
 }
 
 const MAX_CAPACITY = 2000;
-const DEFAULT_ADMIN_PASSWORD = 'admin0062';
+const DEFAULT_ADMIN_PASSWORD = 'GLH@786!Secure'
 
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNavigateHome }) => {
   // Auth state
